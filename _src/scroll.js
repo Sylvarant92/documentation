@@ -21,5 +21,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 document.addEventListener('scroll', (event) => {
   window.requestAnimationFrame(fixNavHeight);
-  console.log(event, window.scrollY);
+  // console.log(event, window.scrollY);
 });
