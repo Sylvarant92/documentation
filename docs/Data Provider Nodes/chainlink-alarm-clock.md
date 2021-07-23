@@ -66,13 +66,11 @@ contract ChainlinkAlarmClock is ChainlinkClient {
 **Required**
 
 The timestamp for which the Chainlink node will wait to respond.
-[block:callout]
-{
-  "type": "warning",
-  "body": "Solidity 0.7.0 deprecated the now keyword. For contracts ^0.7.0, you must use `block.timestamp`",
-  "title": "`now` keyword"
-}
-[/block]
+
+> 🚧 `now` keyword"
+> 
+> Solidity 0.7.0 deprecated the now keyword. For contracts ^0.7.0, you must use `block.timestamp`
+
 #### Solidity example
 
 ```javascript

@@ -11,13 +11,11 @@ metadata:
     0: "/files/OpenGraph_V3.png"
 ---
 # Stay up to date with the latest upgrades
-[block:callout]
-{
-  "type": "warning",
-  "title": "Important: Sign up for update notifications",
-  "body": ""
-}
-[/block]
+
+> 📘 Important
+> 
+> Sign up for update notifications
+
 Developers should subscribe to update notifications via any of the following channels:
 
 * <a href="https://mailchi.mp/chain.link/docs" target="_blank">Developer Email List</a>
@@ -33,7 +31,7 @@ Developers should subscribe to update notifications via any of the following cha
 ## Aug 2020 Flux Aggregator Update
 
 > ❗️ Required
->
+> 
 > Please update to the latest [Price Feed Contracts](../reference-contracts/) to ensure your contracts always reference the most up to date aggregator. If you do not upgrade after the timeline in this document, your consumer contracts may not receive the most accurate price data.
 
 The update to [`FluxAggregator`](https://github.com/smartcontractkit/chainlink/blob/master/contracts/src/v0.6/FluxAggregator.sol) adds congestion resilience capabilities and gas optimizations for reports involving median calculations over the previous version. 

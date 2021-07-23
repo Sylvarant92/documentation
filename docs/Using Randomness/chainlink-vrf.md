@@ -13,13 +13,10 @@ metadata:
 ---
 ![Chainlink](/files/a4c6c80-85d09b6-19facd8-banner.png)
 
-[block:callout]
-{
-  "type": "info",
-  "body": "Please [contact us](https://chainlinkcommunity.typeform.com/to/OYQO67EF?page=docs-VRF) for more information.",
-  "title": "Available now on mainnet"
-}
-[/block]
+> 📘 Available now on mainnet
+> 
+> Please [contact us](https://chainlinkcommunity.typeform.com/to/OYQO67EF?page=docs-VRF) for more information.
+
 # Generate Random Numbers in your Smart Contracts
 
 Chainlink VRF (Verifiable Random Function) is a provably-fair and verifiable source of randomness designed for smart contracts. Smart contract developers can use Chainlink VRF as a tamper-proof RNG to build reliable smart contracts for any applications which rely on unpredictable outcomes:
