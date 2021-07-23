@@ -38,9 +38,11 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [TLS_KEY_PATH](#tls_key_path)
 - [Gas controls](#gas-controls)
   - [ETH_GAS_LIMIT_DEFAULT](#eth_gas_limit_default)
+  - [ETH_GAS_LIMIT_MULTIPLIER](#eth_gas_limit_multiplier)
   - [ETH_GAS_LIMIT_TRANSFER](#eth_gas_limit_transfer)
   - [ETH_GAS_BUMP_PERCENT](#eth_gas_bump_percent)
   - [ETH_GAS_BUMP_THRESHOLD](#eth_gas_bump_threshold)
+  - [ETH_GAS_BUMP_TX_DEPTH](#eth_gas_bump_tx_depth)
   - [ETH_GAS_BUMP_WEI](#eth_gas_bump_wei)
   - [ETH_GAS_PRICE_DEFAULT](#eth_gas_price_default)
   - [ETH_MAX_GAS_PRICE_WEI](#eth_max_gas_price_wei)
@@ -52,8 +54,6 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [BLOCK_HISTORY_ESTIMATOR_TRANSACTION_PERCENTILE](#block_history_estimator_transaction_percentile)
   - [GAS_UPDATER_ENABLED](#gas_updater_enabled)
   - [GAS_UPDATER_TRANSACTION_PERCENTILE](#gas_updater_transaction_percentile)
-  - [ETH_GAS_LIMIT_DEFAULT](#eth_gas_limit_default)
-  - [ETH_GAS_LIMIT_TRANSFER](#eth_gas_limit_transfer)
 - [Other env vars](#other-env-vars)
   - [FEATURE_CRON_V2](#feature_cron_v2)
   - [FEATURE_EXTERNAL_INITIATORS](#feature_external_initiators)
@@ -77,8 +77,17 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [LOG_SQL_MIGRATIONS](#log_sql_migrations)
   - [LOG_TO_DISK](#log_to_disk)
   - [MIN_INCOMING_CONFIRMATIONS](#min_incoming_confirmations)
+  - [ETH_NONCE_AUTO_SYNC](#eth_nonce_auto_sync)
+  - [ETH_FINALITY_DEPTH](#eth_finality_depth)
+  - [ETH_HEAD_TRACKER_HISTORY_DEPTH](#eth_head_tracker_history_depth)
+  - [ETH_HEAD_TRACKER_MAX_BUFFER_SIZE](#eth_head_tracker_max_buffer_size)
+  - [ETH_HEAD_TRACKER_SAMPLING_INTERVAL](#eth_head_tracker_sampling_interval)
   - [BLOCK_BACKFILL_DEPTH](#block_backfill_depth)
   - [BLOCK_BACKFILL_SKIP](#block_backfill_skip)
+  - [ETH_LOG_BACKFILL_BATCH_SIZE](#eth_log_backfill_batch_size)
+  - [ETH_TX_REAPER_INTERVAL](#eth_tx_reaper_interval)
+  - [ETH_TX_REAPER_THRESHOLD](#eth_tx_reaper_threshold)
+  - [ETH_TX_RESEND_AFTER_THRESHOLD](#eth_tx_resend_after_threshold)
   - [MINIMUM_CONTRACT_PAYMENT_LINK_JUELS](#minimum_contract_payment_link_juels)
   - [OPERATOR_CONTRACT_ADDRESS](#operator_contract_address)
   - [ORM_MAX_IDLE_CONNS](#orm_max_idle_conns)
@@ -229,15 +238,27 @@ Use this section to tune your node's gas limits and pricing. In most cases, leav
 
 ## ETH_GAS_LIMIT_DEFAULT
 
-- Default: 500000
+- Default: _automatically set based on Chain ID, typically 500000_
 
-The default gas limit. This should not need to be changed in most cases. Certain applications (e.g. keeper) might override this with application-specific gas limits.
+The default gas limit for outgoing transactions. This should not need to be changed in most cases.
+Some job types (e.g. keeper) may set their own gas limit unrelated to this value.
+
+## ETH_GAS_LIMIT_MULTIPLIER
+
+- Default: `"1.0"`
+
+A factor by which a transaction's GasLimit is
+multiplied before transmission. So if the value is 1.1, and the GasLimit for
+a transaction is 10, 10% will be added before transmission.
+
+This factor is always applied, so includes Optimism L2 transactions which
+uses a default gas limit of 1 and is also applied to EthGasLimitDefault.
 
 ## ETH_GAS_LIMIT_TRANSFER
 
-- Default: 21000
+- Default: _automatically set based on Chain ID, typically 21000_
 
-The gas limit to be used for eth->eth transfers.
+The gas limit used for an ordinary eth->eth transfer.
 
 ## ETH_GAS_BUMP_PERCENT
 
@@ -249,7 +270,13 @@ The percentage by which to bump gas on a transaction that has exceeded `ETH_GAS_
 
 - Default: _automatic based on chain ID_
 
-Chainlink can configured to automatically bump gas on transactions that have been stuck waiting in the mempool for at least this many blocks. Set to 0 to disable gas bumping completely.
+Chainlink can be configured to automatically bump gas on transactions that have been stuck waiting in the mempool for at least this many blocks. Set to 0 to disable gas bumping completely.
+
+## ETH_GAS_BUMP_TX_DEPTH
+
+- Default: `"10"`
+
+The number of transactions to gas bump starting from oldest. Set to 0 for no limit (i.e. bump all).
 
 ## ETH_GAS_BUMP_WEI
 
@@ -294,6 +321,8 @@ GAS_UPDATER_ENABLED=false
 Controls what type of gas estimator is used. Possible values are: "BlockHistory" and "FixedPrice".
 
 ## BLOCK_HISTORY_ESTIMATOR_BATCH_SIZE
+
+- Default: _automatic, based on chain ID, typically 4_
 
 Sets the maximum number of blocks to fetch in one batch in the block history estimator.
 If the env var GAS_UPDATER_BATCH_SIZE is set to 0, it defaults to ETH_RPC_DEFAULT_BATCH_SIZE.
@@ -342,18 +371,6 @@ Think of this number as an indicator of how aggressive you want your node to pri
 Setting this number higher will cause Chainlink to select higher gas prices.
 
 Setting it lower will tend to set lower gas prices.
-
-## ETH_GAS_LIMIT_DEFAULT
-
-- Default: _automatically set based on Chain ID, typically 500000_
-
-The default gas limit for outgoing transactions. Some job types (e.g. keeper) may set their own gas limit unrelated to this value.
-
-## ETH_GAS_LIMIT_TRANSFER
-
-- Default: _automatically set based on Chain ID, typically 21000_
-
-The gas limit used for an ordinary eth->eth transfer.
 
 # Other env vars
 
@@ -512,6 +529,48 @@ The number of block confirmations to wait before kicking off a job run. Setting 
 
 NOTE: The lowest value allowed here is 1, since setting to 0 would imply that logs are processed from the mempool before they are even mined into a block, which isn't possible with Chainlink's current architecture.
 
+## ETH_NONCE_AUTO_SYNC
+
+- Default: `"true"`
+
+Enables/disables running the NonceSyncer on application start
+
+## ETH_FINALITY_DEPTH
+
+- Default: _automatically set based on Chain ID, typically 50_
+
+The number of blocks after which an ethereum transaction is considered "final"
+BlocksConsideredFinal determines how deeply we look back to ensure that transactions are confirmed onto the longest chain
+There is not a large performance penalty to setting this relatively high (on the order of hundreds)
+
+It is practically limited by the number of heads we store in the database and should be less than this with a comfortable margin.
+If a transaction is mined in a block more than this many blocks ago, and is reorged out, we will NOT retransmit this transaction and undefined behaviour can occur including gaps in the nonce sequence that require manual intervention to fix.
+Therefore, this number represents a number of blocks we consider large enough that no re-org this deep will ever feasibly happen.
+
+## ETH_HEAD_TRACKER_HISTORY_DEPTH
+
+- Default: _automatically set based on Chain ID, typically 100_
+
+Tracks the top N block numbers to keep in the `heads` database table.
+Note that this can easily result in MORE than N records since in the case of re-orgs we keep multiple heads for a particular block height.
+This number should be at least as large as `ETH_FINALITY_DEPTH`.
+There may be a small performance penalty to setting this to something very large (10,000+)
+
+## ETH_HEAD_TRACKER_MAX_BUFFER_SIZE
+
+- Default: `"3"`
+
+The maximum number of heads that may be
+buffered in front of the head tracker before older heads start to be
+dropped. You may think of it as something like the maximum permittable "lag"
+for the head tracker before we start dropping heads to keep up.
+
+## ETH_HEAD_TRACKER_SAMPLING_INTERVAL
+
+- Default: _automatically set based on Chain ID, typically 1s_
+
+The minumum amout of time between delivering new heads to different services of Chainlink node.
+
 ## BLOCK_BACKFILL_DEPTH
 
 - Default: `"10"`
@@ -524,6 +583,42 @@ It specifies the number of blocks before the current head that the log broadcast
 
 It enables skipping of very long log backfills - for example in a situation when the node is started after being offline for a long time.
 This might be useful on fast chains and if only recent chain events are relevant
+
+## ETH_LOG_BACKFILL_BATCH_SIZE
+
+- Default: `"100"`
+
+Controls the batch size for calling FilterLogs when backfilling missing or recent logs
+
+## ETH_TX_REAPER_INTERVAL
+
+- Default: `"1h"`
+
+Controls how often the eth tx reaper should run, used to delete old confirmed/fatally_errored transaction records from the database.
+
+## ETH_TX_REAPER_THRESHOLD
+
+- Default: `"24h"`
+
+Represents how long any confirmed/fatally_errored eth_txes will hang around in the database.
+If the eth_tx is confirmed but still below ETH_FINALITY_DEPTH it will not be deleted even if it was created at a time older than this value.
+
+EXAMPLE:
+With: `EthTxReaperThreshold=1h` and `EthFinalityDepth=50`
+If current head is 142, any eth_tx confirmed in block 91 or below will be reaped as long as its created_at was more than EthTxReaperThreshold ago
+
+Set to 0 to disable eth_tx reaping
+
+## ETH_TX_RESEND_AFTER_THRESHOLD
+
+- Default: _automatically set based on Chain ID, typically 1m_
+
+Controls how long the ethResender will wait before
+re-sending the latest eth_tx_attempt. This is designed a as a fallback to
+protect against the eth nodes dropping txes (it has been anecdotally
+observed to happen), networking issues or txes being ejected from the mempool.
+
+See eth_resender.go for more details
 
 ## MINIMUM_CONTRACT_PAYMENT_LINK_JUELS
 
