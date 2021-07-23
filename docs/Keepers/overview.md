@@ -17,4 +17,4 @@ There are three main actors in the network:
 
 The diagram below describes the architecture of the Keeper network. It is responsible for governing the actors on the network and compensating Keepers for performing successful Upkeeps. Through it, clients can register for Upkeep and node operators can register as Keepers.
 
-![keeper-overview](/images/contract-devs/keeper/keeper-overview.png)
+![Keeper Overview Diagram](/images/contract-devs/keeper/keeper-overview.png)
