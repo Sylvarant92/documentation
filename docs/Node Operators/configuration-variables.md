@@ -45,11 +45,21 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [ETH_GAS_PRICE_DEFAULT](#eth_gas_price_default)
   - [ETH_MAX_GAS_PRICE_WEI](#eth_max_gas_price_wei)
   - [ETH_MIN_GAS_PRICE_WEI](#eth_min_gas_price_wei)
+  - [GAS_ESTIMATOR_MODE](#gas_estimator_mode)
+  - [BLOCK_HISTORY_ESTIMATOR_BATCH_SIZE](#block_history_estimator_batch_size)
+  - [BLOCK_HISTORY_ESTIMATOR_BLOCK_DELAY](#block_history_estimator_block_delay)
+  - [BLOCK_HISTORY_ESTIMATOR_BLOCK_HISTORY_SIZE](#block_history_estimator_block_history_size)
+  - [BLOCK_HISTORY_ESTIMATOR_TRANSACTION_PERCENTILE](#block_history_estimator_transaction_percentile)
   - [GAS_UPDATER_ENABLED](#gas_updater_enabled)
   - [GAS_UPDATER_TRANSACTION_PERCENTILE](#gas_updater_transaction_percentile)
   - [ETH_GAS_LIMIT_DEFAULT](#eth_gas_limit_default)
   - [ETH_GAS_LIMIT_TRANSFER](#eth_gas_limit_transfer)
 - [Other env vars](#other-env-vars)
+  - [FEATURE_CRON_V2](#feature_cron_v2)
+  - [FEATURE_EXTERNAL_INITIATORS](#feature_external_initiators)
+  - [FEATURE_FLUX_MONITOR](#feature_flux_monitor)
+  - [FEATURE_FLUX_MONITOR_V2](#feature_flux_monitor_v2)
+  - [FEATURE_WEBHOOK_V2](#feature_webhook_v2)
   - [ADMIN_CREDENTIALS_FILE](#admin_credentials_file)
   - [ALLOW_ORIGINS](#allow_origins)
   - [CHAINLINK_PORT](#chainlink_port)
@@ -67,6 +77,8 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [LOG_SQL_MIGRATIONS](#log_sql_migrations)
   - [LOG_TO_DISK](#log_to_disk)
   - [MIN_INCOMING_CONFIRMATIONS](#min_incoming_confirmations)
+  - [BLOCK_BACKFILL_DEPTH](#block_backfill_depth)
+  - [BLOCK_BACKFILL_SKIP](#block_backfill_skip)
   - [MINIMUM_CONTRACT_PAYMENT_LINK_JUELS](#minimum_contract_payment_link_juels)
   - [OPERATOR_CONTRACT_ADDRESS](#operator_contract_address)
   - [ORM_MAX_IDLE_CONNS](#orm_max_idle_conns)
@@ -275,11 +287,47 @@ ETH_GAS_BUMP_THRESHOLD=0
 GAS_UPDATER_ENABLED=false
 ```
 
+## GAS_ESTIMATOR_MODE
+
+- Default: _automatic, based on chain ID_
+
+Controls what type of gas estimator is used. Possible values are: "BlockHistory" and "FixedPrice".
+
+## BLOCK_HISTORY_ESTIMATOR_BATCH_SIZE
+
+Sets the maximum number of blocks to fetch in one batch in the block history estimator.
+If the env var GAS_UPDATER_BATCH_SIZE is set to 0, it defaults to ETH_RPC_DEFAULT_BATCH_SIZE.
+
+## BLOCK_HISTORY_ESTIMATOR_BLOCK_HISTORY_SIZE
+
+- Default: _automatic, based on chain ID_
+
+Controls the number of past blocks to keep in memory to use as a basis for calculating a percentile gas price.
+
+## BLOCK_HISTORY_ESTIMATOR_BLOCK_DELAY
+
+- Default: _automatic, based on chain ID_
+
+Controls the number of blocks that the block history estimator trails behind head.
+E.g. if this is set to 3, and we receive block 10, block history estimator will fetch block 7.
+
+CAUTION: You might be tempted to set this to 0 to use the latest possible
+block, but it is possible to receive a head BEFORE that block is actually
+available from the connected node via RPC. In this case you will get false
+"zero" blocks that are missing transactions.
+
+## BLOCK_HISTORY_ESTIMATOR_TRANSACTION_PERCENTILE
+
+- Default: `"60"`
+
+This is the percentile gas price to choose. E.g. if the past transaction history contains four transactions with gas prices:
+[100, 200, 300, 400], picking 25 for this number will give a value of 200.
+
 ## GAS_UPDATER_ENABLED
 
-- Default: _automatic based chain ID_
+- Default: _automatic, based on chain ID_
 
-On by default for most chains. When enabled, dynamically adjusts default gas price based on heuristics from mined blocks.
+(Deprecated) On by default for most chains. When enabled, dynamically adjusts default gas price based on heuristics from mined blocks.
 
 ## GAS_UPDATER_TRANSACTION_PERCENTILE
 
@@ -287,7 +335,7 @@ On by default for most chains. When enabled, dynamically adjusts default gas pri
 
 Must be in range 0-100.
 
-Only has an effect if gas updater is enabled. Specifies percentile gas price to choose. E.g. if the block history contains four transactions with gas prices `[100, 200, 300, 400]` then picking 25 for this number will give a value of 200. If the calculated gas price is higher than `ETH_GAS_PRICE_DEFAULT` then the higher price will be used as the base price for new transactions.
+(Deprecated) Only has an effect if gas updater is enabled. Specifies percentile gas price to choose. E.g. if the block history contains four transactions with gas prices `[100, 200, 300, 400]` then picking 25 for this number will give a value of 200. If the calculated gas price is higher than `ETH_GAS_PRICE_DEFAULT` then the higher price will be used as the base price for new transactions.
 
 Think of this number as an indicator of how aggressive you want your node to price its transactions.
 
@@ -309,6 +357,36 @@ The gas limit used for an ordinary eth->eth transfer.
 
 # Other env vars
 
+## FEATURE_CRON_V2
+
+- Default: `true`
+
+Enables the Cron v2 feature.
+
+## FEATURE_EXTERNAL_INITIATORS
+
+- Default: `false`
+
+Enables the External Initiator feature.
+
+## FEATURE_FLUX_MONITOR
+
+- Default: `true`
+
+Enables the Flux Monitor job type.
+
+## FEATURE_FLUX_MONITOR_V2
+
+- Default: `true`
+
+Enables the Flux Monitor v2 job type.
+
+## FEATURE_WEBHOOK_V2
+
+- Default: `false`
+
+Enables the Webhook v2 job type.
+  
 ## ADMIN_CREDENTIALS_FILE
 
 - Default: `$CHAINLINK_ROOT/apicredentials`
@@ -433,6 +511,19 @@ Enables or disables the node writing to the `$ROOT/log.jsonl` file.
 The number of block confirmations to wait before kicking off a job run. Setting this to a lower value improves node response time at the expense of occasionally submitting duplicate transactions in the event of chain re-orgs (duplicate transactions are harmless but cost some eth).
 
 NOTE: The lowest value allowed here is 1, since setting to 0 would imply that logs are processed from the mempool before they are even mined into a block, which isn't possible with Chainlink's current architecture.
+
+## BLOCK_BACKFILL_DEPTH
+
+- Default: `"10"`
+
+It specifies the number of blocks before the current head that the log broadcaster will try to re-consume logs from, e.g. after adding a new job
+
+## BLOCK_BACKFILL_SKIP
+
+- Default: `"false"`
+
+It enables skipping of very long log backfills - for example in a situation when the node is started after being offline for a long time.
+This might be useful on fast chains and if only recent chain events are relevant
 
 ## MINIMUM_CONTRACT_PAYMENT_LINK_JUELS
 
