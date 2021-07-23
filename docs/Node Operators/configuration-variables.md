@@ -30,6 +30,13 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [P2P_LISTEN_IP](#p2p_listen_ip)
   - [P2P_LISTEN_PORT](#p2p_listen_port)
   - [P2P_PEER_ID](#p2p_peer_id)
+- [Keeper](#keeper)
+  - [KEEPER_DEFAULT_TRANSACTION_QUEUE_DEPTH](#keeper_default_transaction_queue_depth)
+  - [KEEPER_MAXIMUM_GRACE_PERIOD](#keeper_maximum_grace_period)
+  - [KEEPER_MINIMUM_REQUIRED_CONFIRMATIONS](#keeper_minimum_required_confirmations)
+  - [KEEPER_REGISTRY_CHECK_GAS_OVERHEAD](#keeper_registry_check_gas_overhead)
+  - [KEEPER_REGISTRY_PERFORM_GAS_OVERHEAD](#keeper_registry_perform_gas_overhead)
+  - [KEEPER_REGISTRY_SYNC_INTERVAL](#keeper_registry_sync_interval)
 - [TLS](#tls)
   - [CHAINLINK_TLS_HOST](#chainlink_tls_host)
   - [CHAINLINK_TLS_PORT](#chainlink_tls_port)
@@ -55,6 +62,9 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [GAS_UPDATER_ENABLED](#gas_updater_enabled)
   - [GAS_UPDATER_TRANSACTION_PERCENTILE](#gas_updater_transaction_percentile)
 - [Other env vars](#other-env-vars)
+  - [ENABLE_EXPERIMENTAL_ADAPTERS](#enable_experimental_adapters)
+  - [ENABLE_LEGACY_JOB_PIPELINE](#enable_legacy_job_pipeline)
+  - [BALANCE_MONITOR_ENABLED](#balance_monitor_enabled)
   - [FEATURE_CRON_V2](#feature_cron_v2)
   - [FEATURE_EXTERNAL_INITIATORS](#feature_external_initiators)
   - [FEATURE_FLUX_MONITOR](#feature_flux_monitor)
@@ -67,6 +77,7 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [DATABASE_BACKUP_FREQUENCY](#database_backup_frequency)
   - [DATABASE_BACKUP_MODE](#database_backup_mode)
   - [DATABASE_BACKUP_URL](#database_backup_url)
+  - [DATABASE_BACKUP_DIR](#database_backup_dir)
   - [ETH_DISABLED](#eth_disabled)
   - [EXPLORER_URL](#explorer_url)
   - [EXPLORER_ACCESS_KEY](#explorer_access_key)
@@ -89,6 +100,8 @@ The env variables listed here are explicitly supported and current as of Chainli
   - [ETH_TX_REAPER_THRESHOLD](#eth_tx_reaper_threshold)
   - [ETH_TX_RESEND_AFTER_THRESHOLD](#eth_tx_resend_after_threshold)
   - [MINIMUM_CONTRACT_PAYMENT_LINK_JUELS](#minimum_contract_payment_link_juels)
+  - [MINIMUM_REQUEST_EXPIRATION](#minimum_request_expiration)
+  - [MINIMUM_SERVICE_DURATION](#minimum_service_duration)
   - [OPERATOR_CONTRACT_ADDRESS](#operator_contract_address)
   - [ORM_MAX_IDLE_CONNS](#orm_max_idle_conns)
   - [ORM_MAX_OPEN_CONNS](#orm_max_open_conns)
@@ -197,6 +210,48 @@ The port to listen on. If left blank, chainlink will randomly select a different
 - Default: _none_
 
 The default peer ID to use for OCR jobs. If unspecified, uses the first available peer ID.
+
+# Keeper
+
+## KEEPER_DEFAULT_TRANSACTION_QUEUE_DEPTH
+
+- Default: `"1"`
+
+Controls the queue size for DropOldestStrategy in Keeper.
+
+Set to 0 to use SendEvery strategy instead.
+
+## KEEPER_MAXIMUM_GRACE_PERIOD
+
+- Default: `"100"`
+
+The maximum number of blocks that a keeper will wait after performing an upkeep before it resumes checking that upkeep
+
+## KEEPER_MINIMUM_REQUIRED_CONFIRMATIONS
+
+- Default: `"12"`
+
+THe minimum number of confirmations that a keeper registry log
+needs before it is handled by the RegistrySynchronizer.
+
+## KEEPER_REGISTRY_CHECK_GAS_OVERHEAD
+
+- Default: `"200000"`
+
+The amount of extra gas to provide checkUpkeep() calls
+to account for the gas consumed by the keeper registry.
+
+## KEEPER_REGISTRY_PERFORM_GAS_OVERHEAD
+
+- Default: `"150000"`
+
+The amount of extra gas to provide performUpkeep() calls to account for the gas consumed by the keeper registry
+
+## KEEPER_REGISTRY_SYNC_INTERVAL
+
+- Default: `"30m"`
+
+The interval in which the RegistrySynchronizer performs a full sync of the keeper registry contract it is tracking.
 
 # TLS
 
@@ -374,33 +429,51 @@ Setting it lower will tend to set lower gas prices.
 
 # Other env vars
 
+## ENABLE_EXPERIMENTAL_ADAPTERS
+
+- Default: `"false"`
+
+Enables experimental adapters.
+
+## ENABLE_LEGACY_JOB_PIPELINE
+
+- Default: `"true"`
+
+Enables the legacy job pipeline
+
+## BALANCE_MONITOR_ENABLED
+
+- Default: `"true"`
+
+Enables Balance Monitor feature.
+
 ## FEATURE_CRON_V2
 
-- Default: `true`
+- Default: `"true"`
 
 Enables the Cron v2 feature.
 
 ## FEATURE_EXTERNAL_INITIATORS
 
-- Default: `false`
+- Default: `"false"`
 
 Enables the External Initiator feature.
 
 ## FEATURE_FLUX_MONITOR
 
-- Default: `true`
+- Default: `"true"`
 
 Enables the Flux Monitor job type.
 
 ## FEATURE_FLUX_MONITOR_V2
 
-- Default: `true`
+- Default: `"true"`
 
 Enables the Flux Monitor v2 job type.
 
 ## FEATURE_WEBHOOK_V2
 
-- Default: `false`
+- Default: `"false"`
 
 Enables the Webhook v2 job type.
   
@@ -459,6 +532,10 @@ Set the mode for automatic database backups. Can be one of `none`, `lite`, `full
 ## DATABASE_BACKUP_URL
 
 If specified, the automatic database backup will pull from this URL rather than the main `DATABASE_URL`. It is recommended to set this value to a read replica if you have one to avoid excessive load on the main database.
+
+## DATABASE_BACKUP_DIR
+
+Configures the directory for saving the backup file, if it's to be different from default one located in the ROOT directory
 
 ## ETH_DISABLED
 
@@ -633,6 +710,18 @@ For jobs that use the EthTx adapter, this is the minimum payment amount in order
   "body": "Keep in mind, the Chainlink node currently responds with a 500,000 gas limit. Under pricing your node could mean it spends more in ETH (on gas) than it earns in LINK."
 }
 [/block]
+
+## MINIMUM_REQUEST_EXPIRATION
+
+- Default: `"300"`
+
+The minimum allowed request expiration for a Service Agreement.
+
+## MINIMUM_SERVICE_DURATION
+
+- Default: `"0s"`
+
+The shortest duration from now that a service is allowed to run.
 
 ## OPERATOR_CONTRACT_ADDRESS
 
