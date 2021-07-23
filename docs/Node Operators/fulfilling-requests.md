@@ -303,7 +303,7 @@ If using Chainlink version `0.9.4` or above, you can add a `name` to your job sp
 }
 [/block]
 
-With the jobs added, you can now use your node to fulfill requests. This last section shows what requesters will do when they send requests to your node. It is also a way to test and make sure that your node is functioning correctly.- In Remix, create a new file named TestnetConsumer.sol and copy and paste the <a href="https://gist.githubusercontent.com/thodges-gh/8df9420393fb29b216d1832e037f2eff/raw/350addafcd19e984cdd4465921fbcbe7ce8500d4/ATestnetConsumer.sol" target="_blank" rel="noreferrer, noopener">TestnetConsumer.sol</a> contract into it.- Click "Start to compile".
+With the jobs added, you can now use your node to fulfill requests. This last section shows what requesters will do when they send requests to your node. It is also a way to test and make sure that your node is functioning correctly.- In Remix, create a new file named TestnetConsumer.sol and copy and paste the <a href="https://gist.githubusercontent.com/dmitrydao/689a7805ed98651f5ecfdeda2cc58875/raw/feae8b0d52a56e82f1298b14df8ea657ff694d91/ATestnetConsumer" target="_blank" rel="noreferrer, noopener">TestnetConsumer.sol</a> contract into it.- Click "Start to compile".
 
 [block:image]
 {

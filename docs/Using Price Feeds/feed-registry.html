@@ -58,65 +58,14 @@ latestRoundData(0xa36085f69e2889c224210f603d836748e7dc0088, 0xEeeeeEeeeEeEeeEeEe
 A <a href="https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/Denominations.sol" target="_blank">`Denominations`</a> Solidity library is available for you to query common denominations:
 
 
-```javascript Solidity 8
-pragma solidity ^0.8.0;
-
-library Denominations {
-  address public constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-  address public constant BTC = 0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB;
-
-  // Fiat currencies follow https://en.wikipedia.org/wiki/ISO_4217
-  address public constant USD = address(840);
-  address public constant GBP = address(826);
-  address public constant EUR = address(978);
-  address public constant JPY = address(392);
-  address public constant KRW = address(410);
-  address public constant CNY = address(156);
-  address public constant AUD = address(36);
-  address public constant CAD = address(124);
-  address public constant CHF = address(756);
-  address public constant ARS = address(32);
-}
+```solidity Solidity 8
+{% include samples/FeedRegistry/DenominationsV0.8.sol %}
 ```
-```javascript Solidity 7
-pragma solidity ^0.7.0;
-
-library Denominations {
-  address public constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-  address public constant BTC = 0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB;
-
-  // Fiat currencies follow https://en.wikipedia.org/wiki/ISO_4217
-  address public constant USD = address(840);
-  address public constant GBP = address(826);
-  address public constant EUR = address(978);
-  address public constant JPY = address(392);
-  address public constant KRW = address(410);
-  address public constant CNY = address(156);
-  address public constant AUD = address(36);
-  address public constant CAD = address(124);
-  address public constant CHF = address(756);
-  address public constant ARS = address(32);
-}
+```solidity Solidity 7
+{% include samples/FeedRegistry/DenominationsV0.7.sol %}
 ```
-```javascript Solidity 6
-pragma solidity ^0.6.0;
-
-library Denominations {
-  address public constant ETH = 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
-  address public constant BTC = 0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB;
-
-  // Fiat currencies follow https://en.wikipedia.org/wiki/ISO_4217
-  address public constant USD = address(840);
-  address public constant GBP = address(826);
-  address public constant EUR = address(978);
-  address public constant JPY = address(392);
-  address public constant KRW = address(410);
-  address public constant CNY = address(156);
-  address public constant AUD = address(36);
-  address public constant CAD = address(124);
-  address public constant CHF = address(756);
-  address public constant ARS = address(32);
-}
+```solidity Solidity 6
+{% include samples/FeedRegistry/DenominationsV0.6.sol %}
 ```
 
 # Code Examples
@@ -125,101 +74,14 @@ library Denominations {
 
 To consume price data from the Feed Registry, your smart contract should reference <a href="https://github.com/smartcontractkit/chainlink/blob/develop/contracts/src/v0.8/interfaces/FeedRegistryInterface.sol" target="_blank">`FeedRegistryInterface`</a>, which defines the external functions implemented by the Feed Registry.
 
-```javascript Solidity 8
-pragma solidity 0.8.6;
-
-import "@chainlink/contracts/src/v0.8/interfaces/FeedRegistryInterface.sol";
-
-contract PriceConsumer {
-
-    FeedRegistryInterface internal registry;
-
-    /**
-     * Network: Mainnet Alpha Preview
-     * Feed Registry: 0xd441F0B98BcF34749391A3879A94caA95ffDB74D
-     */
-    constructor() {
-        registry = FeedRegistryInterface(0xd441F0B98BcF34749391A3879A94caA95ffDB74D);
-    }
-
-    /**
-     * Returns the latest price
-     */
-    function getThePrice(address asset, address denomination) public view returns (int) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = registry.latestRoundData(asset, denomination);
-        return price;
-    }
-}
+```solidity Solidity 8
+{% include samples/FeedRegistry/PriceConsumerV0.8.sol %}
 ```
-```javascript Solidity 7
-pragma solidity 0.7.6;
-
-import "@chainlink/contracts/src/v0.7/interfaces/FeedRegistryInterface.sol";
-
-contract PriceConsumer {
-
-    FeedRegistryInterface internal registry;
-
-    /**
-     * Network: Mainnet Alpha Preview
-     * Feed Registry: 0xd441F0B98BcF34749391A3879A94caA95ffDB74D
-     */
-    constructor() {
-        registry = FeedRegistryInterface(0xd441F0B98BcF34749391A3879A94caA95ffDB74D);
-    }
-
-    /**
-     * Returns the latest price
-     */
-    function getThePrice(address asset, address denomination) public view returns (int) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = registry.latestRoundData(asset, denomination);
-        return price;
-    }
-}
+```solidity Solidity 7
+{% include samples/FeedRegistry/PriceConsumerV0.7.sol %}
 ```
-```javascript Solidity 6
-pragma solidity 0.6.12;
-
-import "@chainlink/contracts/src/v0.6/interfaces/FeedRegistryInterface.sol";
-
-contract PriceConsumer {
-
-    FeedRegistryInterface internal registry;
-
-    /**
-     * Network: Mainnet Alpha Preview
-     * Feed Registry: 0xd441F0B98BcF34749391A3879A94caA95ffDB74D
-     */
-    constructor() public {
-        registry = FeedRegistryInterface(0xd441F0B98BcF34749391A3879A94caA95ffDB74D);
-    }
-
-    /**
-     * Returns the latest price
-     */
-    function getThePrice(address asset, address denomination) public view returns (int) {
-        (
-            uint80 roundID, 
-            int price,
-            uint startedAt,
-            uint timeStamp,
-            uint80 answeredInRound
-        ) = registry.latestRoundData(asset, denomination);
-        return price;
-    }
-}
+```solidity Solidity 6
+{% include samples/FeedRegistry/PriceConsumerV0.6.sol %}
 ```
 
 {% endmarkdown %}
@@ -244,18 +106,7 @@ contract PriceConsumer {
 
 ## Javascript
 ```javascript Mainnet
-const web3 = new Web3("https://mainnet.infura.io/v3/<infura_project_id>");
-const feedRegistryInterfaceABI = [{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"accessController","type":"address"},{"indexed":true,"internalType":"address","name":"sender","type":"address"}],"name":"AccessControllerSet","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"asset","type":"address"},{"indexed":true,"internalType":"address","name":"denomination","type":"address"},{"indexed":true,"internalType":"address","name":"latestAggregator","type":"address"},{"indexed":false,"internalType":"address","name":"previousAggregator","type":"address"},{"indexed":false,"internalType":"uint16","name":"nextPhaseId","type":"uint16"},{"indexed":false,"internalType":"address","name":"sender","type":"address"}],"name":"FeedConfirmed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"asset","type":"address"},{"indexed":true,"internalType":"address","name":"denomination","type":"address"},{"indexed":true,"internalType":"address","name":"proposedAggregator","type":"address"},{"indexed":false,"internalType":"address","name":"currentAggregator","type":"address"},{"indexed":false,"internalType":"address","name":"sender","type":"address"}],"name":"FeedProposed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OwnershipTransferRequested","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"inputs":[],"name":"acceptOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"address","name":"aggregator","type":"address"}],"name":"confirmFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"description","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getAccessController","outputs":[{"internalType":"contract AccessControllerInterface","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"getAnswer","outputs":[{"internalType":"int256","name":"answer","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"getCurrentPhaseId","outputs":[{"internalType":"uint16","name":"currentPhaseId","type":"uint16"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"getFeed","outputs":[{"internalType":"contract AggregatorV2V3Interface","name":"aggregator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint80","name":"roundId","type":"uint80"}],"name":"getNextRoundId","outputs":[{"internalType":"uint80","name":"nextRoundId","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint16","name":"phaseId","type":"uint16"}],"name":"getPhase","outputs":[{"components":[{"internalType":"uint16","name":"phaseId","type":"uint16"},{"internalType":"uint80","name":"startingAggregatorRoundId","type":"uint80"},{"internalType":"uint80","name":"endingAggregatorRoundId","type":"uint80"}],"internalType":"struct FeedRegistryInterface.Phase","name":"phase","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint16","name":"phaseId","type":"uint16"}],"name":"getPhaseFeed","outputs":[{"internalType":"contract AggregatorV2V3Interface","name":"aggregator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint16","name":"phaseId","type":"uint16"}],"name":"getPhaseRange","outputs":[{"internalType":"uint80","name":"startingRoundId","type":"uint80"},{"internalType":"uint80","name":"endingRoundId","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint80","name":"roundId","type":"uint80"}],"name":"getPreviousRoundId","outputs":[{"internalType":"uint80","name":"previousRoundId","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"getProposedFeed","outputs":[{"internalType":"contract AggregatorV2V3Interface","name":"proposedAggregator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint80","name":"_roundId","type":"uint80"}],"name":"getRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint80","name":"roundId","type":"uint80"}],"name":"getRoundFeed","outputs":[{"internalType":"contract AggregatorV2V3Interface","name":"aggregator","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint256","name":"roundId","type":"uint256"}],"name":"getTimestamp","outputs":[{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"aggregator","type":"address"}],"name":"isFeedEnabled","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"latestAnswer","outputs":[{"internalType":"int256","name":"answer","type":"int256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"latestRound","outputs":[{"internalType":"uint256","name":"roundId","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"latestRoundData","outputs":[{"internalType":"uint80","name":"roundId","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"latestTimestamp","outputs":[{"internalType":"uint256","name":"timestamp","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"address","name":"aggregator","type":"address"}],"name":"proposeFeed","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"},{"internalType":"uint80","name":"roundId","type":"uint80"}],"name":"proposedGetRoundData","outputs":[{"internalType":"uint80","name":"id","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"proposedLatestRoundData","outputs":[{"internalType":"uint80","name":"id","type":"uint80"},{"internalType":"int256","name":"answer","type":"int256"},{"internalType":"uint256","name":"startedAt","type":"uint256"},{"internalType":"uint256","name":"updatedAt","type":"uint256"},{"internalType":"uint80","name":"answeredInRound","type":"uint80"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract AccessControllerInterface","name":"_accessController","type":"address"}],"name":"setAccessController","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"to","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"typeAndVersion","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"pure","type":"function"},{"inputs":[{"internalType":"address","name":"asset","type":"address"},{"internalType":"address","name":"denomination","type":"address"}],"name":"version","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}];
-const addr = "0xd441F0B98BcF34749391A3879A94caA95ffDB74D";
-const feedRegistry = new web3.eth.Contract(feedRegistryInterfaceABI, addr);
-
-const LINK = '0x514910771AF9Ca656af840dff83E8264EcF986CA';
-const USD = '0x0000000000000000000000000000000000000348';
-feedRegistry.methods.latestRoundData(LINK, USD).call()
-    .then((roundData) => {
-        // Do something with roundData
-        console.log("Latest Round Data", roundData)
-    });
+{% include samples/FeedRegistry/PriceConsumer.js %}
 ```
 
 {% endmarkdown %}
